@@ -1,130 +1,115 @@
-// naïve RAG · troubleshooting agent
+# Wi-Fi Router Troubleshooting Assistant
 
-# Wi‑Fi Router Troubleshooting Assistant
+A simple **Naïve RAG-based troubleshooting assistant** that uses router manuals, installation guides, FAQs, troubleshooting documents, and images as its knowledge base.
 
-A retrieval-augmented assistant that reads router manuals, FAQs, and diagnostic images, then answers connectivity problems with grounded, cited steps.
+The application retrieves relevant information from the knowledge base and uses an LLM to provide a concise, grounded troubleshooting response.
 
-## overview
+## Features
 
-This is a simple **naïve RAG-based troubleshooting assistant** built on router manuals, installation guides, FAQs, troubleshooting documents, and images. It retrieves relevant context from a knowledge base and asks an LLM to produce a concise, grounded answer — one that never states anything the source documents don't support.
+- 📄 Supports multiple PDF documents
+- 🖼️ Uses a **Vision Language Model (VLM)** to extract useful information from router images
+- 🔎 Retrieves relevant information using vector similarity search
+- 🧠 Uses an LLM to generate answers from retrieved context
+- 🚫 Avoids adding information that is not present in the knowledge base
+- 📚 Provides the source/reference document used for the answer
 
-## features
+## Knowledge Base
 
-📄
+The application uses:
 
-### Multi-document PDFs
+- `faq.pdf`
+- `installation_guide.pdf`
+- `router_user_manual.pdf`
+- `troubleshooting_guide.pdf`
+- `error_message.png`
+- `network_diagram.png`
+- `router_lights.png`
 
-Ingests manuals, guides, and FAQs as one knowledge base.
+## How It Works
 
-🖼️
-
-### Vision-language extraction
-
-A VLM reads router images and converts them into usable text.
-
-🔎
-
-### Vector similarity search
-
-Retrieves the passages most relevant to the question asked.
-
-🧠
-
-### Grounded generation
-
-The LLM answers strictly from retrieved context — no invention.
-
-📚
-
-### Source attribution
-
-Every answer names the document it was drawn from.
-
-🚫
-
-### No hallucinated fixes
-
-If it's not in the knowledge base, it's not in the answer.
-
-## knowledge base
-
-faq.pdftext
-
-installation_guide.pdftext
-
-router_user_manual.pdftext
-
-troubleshooting_guide.pdftext
-
-error_message.pngimage · VLM
-
-network_diagram.pngimage · VLM
-
-router_lights.pngimage · VLM
-
-## how it works
-
-01
-
-#### Extract
-
-Text is pulled directly from PDFs; router photos are read by a Vision Language Model and converted into descriptive text.
-
-02
-
-#### Chunk
-
-All extracted text is split into overlapping chunks with a RecursiveCharacterTextSplitter.
-
-03
-
-#### Embed
-
-Each chunk is embedded using OpenAI Embeddings and stored in ChromaDB.
-
-04
-
-#### Retrieve
-
-A user's question is embedded and matched against the vector store for the most relevant chunks.
-
-05
-
-#### Answer
-
-GPT‑4o‑mini generates a troubleshooting response grounded only in the retrieved context, with its source cited.
-
-## tech stack
-
-Python LangChain GPT‑4o‑mini OpenAI Embeddings ChromaDB PyPDF RecursiveCharacterTextSplitter Vision Language Model
-
-## installation
-
-clone the repository
-
-\# git clone \<your-repository-url> cd "Wi-Fi Router Troubleshooting Assistant"
-
-install dependencies
-
-pip install -r requirements.txt
-
-add your OpenAI key — create a .env file
-
-OPENAI_API_KEY=your_api_key_here
-
-## run
-
-Make sure every PDF and image file sits in the same folder as `app.py`, then run:
-
-python app.py
-
-You'll be prompted for a troubleshooting question, for example:
-
-\> Why does my Wi‑Fi keep disconnecting even though the router is connected?
-
-## example output
-
+```text
+PDF Files ──────────────┐
+                        │
+                        ▼
+                 Text Extraction
+                        │
+                        ▼
+Images ──► VLM ──► Image Information
+                        │
+                        ▼
+                 Text Chunking
+                        │
+                        ▼
+              OpenAI Embeddings
+                        │
+                        ▼
+                   ChromaDB
+                        │
+User Question ───────► Retrieval
+                        │
+                        ▼
+                  Relevant Context
+                        │
+                        ▼
+                  GPT-4o-mini
+                        │
+                        ▼
+             Troubleshooting Answer
 ```
+
+## Tech Stack
+
+- **Python**
+- **LangChain**
+- **OpenAI GPT-4o-mini**
+- **OpenAI Embeddings**
+- **ChromaDB**
+- **PyPDF**
+- **RecursiveCharacterTextSplitter**
+- **Vision Language Model (VLM)**
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone <your-repository-url>
+cd "Wi-Fi Router Troubleshooting Assistant"
+```
+
+Install the required packages:
+
+```bash
+pip install -r requirements.txt
+```
+
+Create a `.env` file and add your OpenAI API key:
+
+```env
+OPENAI_API_KEY=your_api_key_here
+```
+
+## Run the Application
+
+Make sure all the PDF and image files are in the same folder as `app.py`.
+
+Then run:
+
+```bash
+python app.py
+```
+
+Enter a troubleshooting question when prompted.
+
+Example:
+
+```text
+Why does my Wi-Fi keep disconnecting even though the router is connected?
+```
+
+## Example Output
+
+```text
 Problem Identified:
 The Wi-Fi connection is repeatedly disconnecting.
 
@@ -142,11 +127,32 @@ Reference:
 troubleshooting_guide.pdf
 ```
 
-## project structure
+## Project Structure
 
-Wi-Fi Router Troubleshooting Assistant/ │ ├── app.py ├── requirements.txt ├── .env │ ├── faq.pdf ├── installation_guide.pdf ├── router_user_manual.pdf ├── troubleshooting_guide.pdf │ ├── error_message.png ├── network_diagram.png └── router_lights.png
+```text
+Wi-Fi Router Troubleshooting Assistant/
+│
+├── app.py
+├── requirements.txt
+├── .env
+│
+├── faq.pdf
+├── installation_guide.pdf
+├── router_user_manual.pdf
+├── troubleshooting_guide.pdf
+│
+├── error_message.png
+├── network_diagram.png
+└── router_lights.png
+```
 
-## future improvements
+## Key Concept
+
+This project demonstrates how **text-based and image-based knowledge can be combined in a RAG pipeline**. PDF content is extracted directly, while router images are processed using a Vision Language Model and converted into textual information before being added to the retrieval system.
+
+The retrieved context is then passed to the language model so that the final response remains grounded in the available troubleshooting knowledge.
+
+## Future Improvements
 
 - Add a Streamlit interface
 - Add persistent ChromaDB storage
@@ -156,4 +162,8 @@ Wi-Fi Router Troubleshooting Assistant/ │ ├── app.py ├── requireme
 - Improve retrieval with hybrid search
 - Add evaluation for retrieval and answer quality
 
-**Anushka Dabhade** · B.Tech CSE, AI/ML naïve RAG · LangChain · ChromaDB
+## Author
+
+**Anushka Dabhade**
+
+B.Tech CSE | AI/ML
